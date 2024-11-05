@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <!-- Include dexie.js -->
+  <script src="https://npmcdn.com/dexie/dist/dexie.js"></script>
+
+  <!-- Just a simple log function... -->
+  <script>
+    function log(txt) {
+      document.getElementById("log").value += txt + "\n";
+    }
+
+    // Check that browser supports generator functions:
+    try {
+      eval("(function* (){})");
+    } catch (e) {
+      log(
+        "This browser doesn't support generator functions. Must use a recent version of Chrome, Opera, Firefox or Edge."
+      );
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: Arial;
+      padding: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 50vh;
+    }
+  </style>
+
+  <body>
+    <!-- Some HTML for the log window -->
+    <a href="http://dexie.org/docs/API-Reference" target="_new"
+      >Dexie API Reference (new tab)</a
+    >
+
+    <h3>Log</h3>
+    <textarea id="log"></textarea>
+    <p id="safari-version" style="display: none">
+      This browser denies indexedDB access from iframes.
+      <a href="https://fiddle.jshell.net/dfahlander/6rqyfag9/show" target="_top"
+        >Click here to open it directly without any iframe.</a
+      >
+    </p>
+  </body>
+
+  <script defer>
+    var db = new Dexie("MyFriendDB3");
+    db.version(1).stores({
+      consumption: "a, b",
+    });
+
+    async function main() {
+      log("User agent: " + navigator.userAgent);
+      log("Dexie: " + Dexie.semVer);
+      try {
+        const uniqueKeys = await db.consumption.orderBy("a").uniqueKeys();
+        log("Unique keys: " + JSON.stringify(uniqueKeys));
+      } catch (error) {
+        log(error);
+      }
+
+      await db.delete();
+    }
+
+    main().catch((e) => {
+      if (e.inner) e = e.inner;
+      if (e.name === "MissingAPIError") log("Couldn't find indexedDB API");
+      else if (e.name == "SecurityError") {
+        document.getElementById("log").style = "display:none";
+        document.getElementById("safari-version").style = "display:";
+      } else {
+        log(e);
+      }
+    });
+  </script>
+</html>
