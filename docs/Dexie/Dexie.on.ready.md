@@ -30,6 +30,8 @@ db.on("ready", (vipDB) => { console.log ("Database ready"); });
 
 ### Description
 
+This event is called when the db instance is opened but before all other queries. Other queries that talk directly to the Dexie instance won't resolve until the promise from this callback has resolved.
+
 There are different use cases for this event. To get an easier understanding of them, skip the following text and jump directly to "Use Case 1". "Use Case 2" or "User Case 3" below.
 
 In case database is already open, the event will trigger immediately. If not open, it will trigger as soon as database becomes successfully opened. Once subscriber is called, it will be removed from the listeners unless bSticky was set to true. If your subscriber returns a Promise, the open procedure will "block" the database until your promise becomes resolved or rejected. With "block" it means that any queued db operations will stay queued and new operations will be enqueued. If the returned promise is rejected, the call to database open () will fail, otherwise open() promise will resolve and any queued operation will resume.
