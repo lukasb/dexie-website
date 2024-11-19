@@ -6,7 +6,7 @@ title: 'Dexie.on.ready'
 ### Syntax
 
 ```javascript
-db.on("ready", function callback () {}, bSticky);
+db.on("ready", function callback (vipDB) {}, bSticky);
 ```
 
 ### Parameters
@@ -14,12 +14,13 @@ db.on("ready", function callback () {}, bSticky);
 <table>
 <tr><td>callback: Function</td><td>Callback to execute when database has successfully opened.</td></tr>
 <tr><td>bSticky: Boolean</td><td>Optional. If truthy, the subscriber will survive db.close();db.open();</td></tr>
+<tr><td>vipDB: Dexie</td><td>An insteance of Dexie with exclusive access to the database since the rest of the application will be blocked from DB access until the promise from this callback resolves.</td></tr>
 </table>
 
 ### Sample
 
 ```javascript
-db.on("ready", function() { alert ("Database ready"); });
+db.on("ready", (vipDB) => { console.log ("Database ready"); });
 ```
 
 ### Description
@@ -33,7 +34,7 @@ In case database is already open, the event will trigger immediately. If not ope
 This use case is similar to jQuery('document').ready() - if subscribing to the event *before* database is open, the subscriber will be queued and executed once database is ready, but if database is already open when subscribing to the event, the subscriber will be executed immediately. This use case is typically a one-shot subscription. In case database is closed and reopened, the subscriber will not be called again.
 
 ```javascript
-db.on("ready", function () {
+db.on("ready", function (vipDB) {
     // Will trigger once and only once.
 });
 ```
@@ -49,7 +50,7 @@ In case you want to initialize your database with contents before any operation 
 If you are building a plugin that will extend the open procedure, you may want to use the bSticky parameter to tell Dexie to let your subscriber not be a one-shot subscriber but survice calls to db.close() / db.open(). This is a rare use case for application code, since a database is typically opened only once in the application's life time.
 
 ```javascript
-db.on("ready", function () {
+db.on("ready", function (vipDB) {
     // Will trigger each time db is successfully opened.
 }, true);
 ```
