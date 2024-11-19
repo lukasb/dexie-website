@@ -7,7 +7,10 @@ title: 'Dexie.on.ready'
 
 ```javascript
 db.on("ready", async (vipDB) => {
-  // Do some work before resuming queries made directly to the db instance.
+  // Do some work here such as populating data or such.
+  // This code can access the db (through argument vipDB) before other queries even if
+  // other queries were made before - they are halted until the promise from this callback
+  // is resolved.
 }, bSticky);
 ```
 
